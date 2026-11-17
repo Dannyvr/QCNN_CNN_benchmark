@@ -1,0 +1,165 @@
+run:
+  mode: grid
+  tasks:
+  - mnist_01
+  models:
+  - QCNN
+  - CNN_Matched
+  - MLP_Compact
+  - Logistic_Regression
+  - SVM_Linear
+  - SVM_RBF
+  - CNN_Full
+  results_dir: ./results
+  run_name: null
+  resume: true
+  n_jobs: 1
+  log_level: INFO
+seed_sets:
+  pilot: &id001
+  - 42
+  - 123
+  - 999
+  full: &id002
+  - 42
+  - 101
+  - 202
+  - 303
+  - 404
+  - 505
+  - 606
+  - 707
+  - 808
+  - 909
+  - 1111
+  - 2222
+  - 3333
+  - 4444
+  - 5555
+modes:
+  pilot:
+    description: 'Piloto: valida el pipeline completo con pocas semillas y épocas
+      reducidas'
+    train_sizes:
+    - 20
+    - 50
+    budgets:
+    - 15
+    - 45
+    seeds: *id001
+    epochs_scale: 0.5
+  data_size:
+    description: 'Curvas de aprendizaje: exactitud vs N_train con T fijo'
+    train_sizes:
+    - 10
+    - 20
+    - 50
+    - 100
+    - 200
+    - 500
+    budgets:
+    - 45
+    seeds: *id002
+    epochs_scale: 1.0
+  param_budget:
+    description: 'Eficiencia paramétrica: exactitud vs T con N_train fijo'
+    train_sizes:
+    - 50
+    budgets:
+    - 15
+    - 30
+    - 45
+    - 90
+    seeds: *id002
+    epochs_scale: 1.0
+  grid:
+    description: Barrido cruzado completo N_train x T (identifica puntos de cruce)
+    train_sizes:
+    - 10
+    - 20
+    - 50
+    - 100
+    - 200
+    - 500
+    budgets:
+    - 15
+    - 30
+    - 45
+    - 90
+    seeds: *id002
+    epochs_scale: 1.0
+tasks:
+  mnist_01:
+    classes:
+    - 0
+    - 1
+    description: Alta separabilidad geométrica (validación inicial)
+  mnist_38:
+    classes:
+    - 3
+    - 8
+    description: Alto solape morfológico no lineal (tarea difícil)
+data:
+  data_dir: ./data
+  splits_dir: ./data/splits
+  test_size: 1000
+  val_size: 200
+  split_seed: 42
+preprocessing:
+  pca_components: 8
+  scaler: standard
+  quantum_angle_range: 0_to_pi
+training:
+  select_best_on_val: true
+  eval_batch_size: 256
+models:
+  QCNN:
+    device: default.qubit
+    n_qubits: 8
+    init_scale: 0.785398
+    lr: 0.05
+    epochs: 35
+    batch_size: 16
+    weight_decay: 0.0
+  CNN_Matched:
+    lr: 0.01
+    epochs: 40
+    batch_size: 16
+    weight_decay: 0.0001
+  MLP_Compact:
+    lr: 0.01
+    epochs: 40
+    batch_size: 16
+    weight_decay: 0.0
+  CNN_Full:
+    conv1_channels: 8
+    conv2_channels: 16
+    fc_dim: 32
+    dropout: 0.2
+    lr: 0.001
+    epochs: 25
+    batch_size: 32
+    weight_decay: 0.0
+  Logistic_Regression:
+    C: 1.0
+    max_iter: 1000
+  SVM_Linear:
+    C: 1.0
+  SVM_RBF:
+    C: 1.0
+    gamma: scale
+statistics:
+  confidence_level: 0.95
+  reference_model: QCNN
+  comparisons:
+  - CNN_Matched
+  - MLP_Compact
+  - Logistic_Regression
+  - SVM_RBF
+  - CNN_Full
+  correction: holm
+  alpha: 0.05
+plots:
+  dpi: 600
+  reference_budget: 45
+  reference_train_size: 50

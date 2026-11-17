@@ -1,0 +1,24 @@
+{
+    "dataset": "mnist_binary",
+    "classes": [
+        0,
+        1
+    ],
+    "seed": 42,
+    "test_size": 1000,
+    "test_distribution": {
+        "c0": 500,
+        "c1": 500
+    },
+    "val_size": 200,
+    "val_distribution": {
+        "c0": 100,
+        "c1": 100
+    },
+    "train_pool_size": 13580,
+    "train_pool_distribution": {
+        "c0": 6303,
+        "c1": 7277
+    },
+    "file_path": "C:\\Users\\danny\\Documents\\Cenfotec\\Cuatrimestre 6\\qcnn_benchmark\\data\\splits\\mnist_01_static_test.npz"
+}
